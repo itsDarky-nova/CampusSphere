@@ -1,11 +1,13 @@
+const { getDb } = require('./firebase');
 require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
-const connectFirebase = require('./firebase');
+
 console.log("TYPE OF connectFirebase:", typeof connectFirebase);
+const { getDb } = require('./firebase');
 
 
 const app = express();
@@ -75,6 +77,29 @@ app.get('/api/students', async (req, res, next) => {
     next(err);
   }
 });
+// ================= CHAT =================
+
+// Get all chat messages
+app.get('/api/chat', async (req, res) => {
+  try {
+    const db = getDb();
+    const snapshot = await db.collection('chat')
+      .orderBy('timestamp', 'asc')
+      .get();
+
+    const messages = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    res.json(messages);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Send message
 app.post('/api/chat', async (req, res) => {
   try {
     const db = getDb();
@@ -93,31 +118,16 @@ app.post('/api/chat', async (req, res) => {
 
     const ref = await db.collection('chat').add(message);
 
-    res.status(201).json({ id: ref.id, ...message });
+    res.status(201).json({
+      id: ref.id,
+      ...message
+    });
 
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
-app.get('/api/chat', async (req, res) => {
-  try {
-    const db = getDb();
-    const snapshot = await db.collection('chat')
-      .orderBy('timestamp')
-      .get();
-
-    const messages = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-
-    res.json(messages);
-
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
