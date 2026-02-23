@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CampusSphere – Admin Dashboard</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body class="dashboard-body">
+
+  <div class="overlay" id="mobileOverlay" onclick="closeSidebar()"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon">🌟</span>
+      Campus<span>Sphere</span>
+    </div>
+    <div class="sidebar-user">
+      <div class="avatar" style="background:linear-gradient(135deg,#FF6B6B,#FF8E8E);">A</div>
+      <div class="sidebar-user-info">
+        <div class="name">Admin</div>
+        <div class="role" style="color:#FF6B6B;">Administrator</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" onclick="switchSection('overview', this)">
+        <span class="nav-icon">📊</span> Overview
+      </div>
+      <div class="nav-item" onclick="switchSection('users', this)">
+        <span class="nav-icon">👥</span> Users Management
+      </div>
+      <div class="nav-item" onclick="switchSection('adminNotes', this)">
+        <span class="nav-icon">📚</span> Notes Management
+      </div>
+      <div class="nav-item" onclick="switchSection('adminLeave', this)">
+        <span class="nav-icon">📝</span> Leave Requests
+      </div>
+      <div class="nav-item" onclick="switchSection('adminAnnounce', this)">
+        <span class="nav-icon">📢</span> Announcements
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn btn-danger" style="width:100%;justify-content:center;" onclick="adminLogout()">🚪 Logout</button>
+    </div>
+  </aside>
+
+  <div class="main-content">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="mobile-toggle" onclick="openSidebar()">☰</button>
+        <div class="topbar-title" id="topbarTitle">Admin Overview</div>
+      </div>
+      <div class="topbar-right">
+        <div style="background:rgba(255,107,107,0.1);color:#FF6B6B;padding:6px 16px;border-radius:50px;font-size:0.82rem;font-weight:600;border:1px solid rgba(255,107,107,0.2);">⚡ Admin Mode</div>
+        <div class="avatar" style="background:linear-gradient(135deg,#FF6B6B,#FF8E8E);">A</div>
+      </div>
+    </div>
+
+    <!-- OVERVIEW -->
+    <section class="section active" id="section-overview">
+      <div class="section-header">
+        <h2>📊 Admin Overview</h2>
+        <p>Platform statistics and insights</p>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card accent1">
+          <div class="stat-icon">🎓</div>
+          <div class="stat-value counter" id="totalStudents">0</div>
+          <div class="stat-label">Total Students</div>
+        </div>
+        <div class="stat-card accent2">
+          <div class="stat-icon">📚</div>
+          <div class="stat-value counter" id="totalNotes">0</div>
+          <div class="stat-label">Total Notes</div>
+        </div>
+        <div class="stat-card accent3">
+          <div class="stat-icon">📝</div>
+          <div class="stat-value counter" id="totalLeaves">0</div>
+          <div class="stat-label">Leave Requests</div>
+        </div>
+        <div class="stat-card accent4">
+          <div class="stat-icon">📢</div>
+          <div class="stat-value counter" id="totalAnnouncements">0</div>
+          <div class="stat-label">Announcements</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="margin-bottom:16px;font-size:1.1rem;">🕒 Pending Leave Requests</h3>
+          <div id="overviewLeaves">
+            <div class="empty-state"><div class="empty-icon">✅</div><p>No pending requests</p></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="margin-bottom:16px;font-size:1.1rem;">🆕 Recent Registrations</h3>
+          <div id="overviewStudents">
+            <div class="empty-state"><div class="empty-icon">👥</div><p>No students yet</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- USERS -->
+    <section class="section" id="section-users">
+      <div class="section-header">
+        <h2>👥 Users Management</h2>
+        <p>Manage registered students</p>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table id="usersTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Registered</th>
+                <th>Notes</th>
+                <th>Leaves</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted);">No students registered yet</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- NOTES MANAGEMENT -->
+    <section class="section" id="section-adminNotes">
+      <div class="section-header">
+        <h2>📚 Notes Management</h2>
+        <p>View and manage all uploaded notes</p>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th>Subject</th>
+                <th>Uploaded By</th>
+                <th>Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="adminNotesBody">
+              <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted);">No notes uploaded yet</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEAVE MANAGEMENT -->
+    <section class="section" id="section-adminLeave">
+      <div class="section-header">
+        <h2>📝 Leave Requests Management</h2>
+        <p>Review and manage all leave requests</p>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Student</th>
+                <th>Type</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Reason</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="adminLeaveBody">
+              <tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted);">No leave requests yet</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ANNOUNCEMENTS -->
+    <section class="section" id="section-adminAnnounce">
+      <div class="section-header">
+        <h2>📢 Announcements</h2>
+        <p>Post and manage campus announcements</p>
+      </div>
+      <div class="grid-2" style="margin-bottom:24px;">
+        <div class="card">
+          <h3 style="margin-bottom:16px;font-size:1.05rem;">➕ New Announcement</h3>
+          <div id="announceAlert" class="alert alert-success"></div>
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" class="form-control" id="announceTitle" placeholder="Announcement title"/>
+          </div>
+          <div class="form-group">
+            <label>Message</label>
+            <textarea class="form-control" id="announceMsg" placeholder="Write your announcement..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Priority</label>
+            <select class="form-control" id="announcePriority">
+              <option value="normal">Normal</option>
+              <option value="important">Important</option>
+              <option value="urgent">Urgent</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" onclick="postAnnouncement()">📢 Post Announcement</button>
+        </div>
+        <div class="card" style="background:linear-gradient(135deg,rgba(108,99,255,0.06),rgba(67,217,176,0.04));">
+          <h3 style="margin-bottom:8px;font-size:1.05rem;">📌 Quick Stats</h3>
+          <div style="margin-top:16px;">
+            <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
+              <span style="color:var(--text-muted);">Total Posted</span>
+              <strong id="announceCountStat">0</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:10px 0;">
+              <span style="color:var(--text-muted);">Students Notified</span>
+              <strong id="studentsNotifiedStat">0</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:18px;font-size:1.05rem;">📋 All Announcements</h3>
+        <div id="adminAnnounceList">
+          <div class="empty-state"><div class="empty-icon">📭</div><p>No announcements posted yet</p></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

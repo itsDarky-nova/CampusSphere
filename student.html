@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CampusSphere – Student Dashboard</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body class="dashboard-body">
+
+  <div class="overlay" id="mobileOverlay" onclick="closeSidebar()"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon">🌟</span>
+      Campus<span>Sphere</span>
+    </div>
+    <div class="sidebar-user">
+      <div class="avatar" id="sidebarAvatar">S</div>
+      <div class="sidebar-user-info">
+        <div class="name" id="sidebarName">Student</div>
+        <div class="role">Student Account</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" onclick="switchSection('home', this)">
+        <span class="nav-icon">🏠</span> Dashboard
+      </div>
+      <div class="nav-item" onclick="switchSection('profile', this)">
+        <span class="nav-icon">👤</span> My Profile
+      </div>
+      <div class="nav-item" onclick="switchSection('roommate', this)">
+        <span class="nav-icon">🏘️</span> Roommate Matching
+      </div>
+      <div class="nav-item" onclick="switchSection('notes', this)">
+        <span class="nav-icon">📚</span> Notes
+      </div>
+      <div class="nav-item" onclick="switchSection('leave', this)">
+        <span class="nav-icon">📝</span> Leave Request
+      </div>
+      <div class="nav-item" onclick="switchSection('chat', this)">
+        <span class="nav-icon">💬</span> Campus Chat
+      </div>
+      <div class="nav-item" onclick="switchSection('announcements', this)">
+        <span class="nav-icon">📢</span> Announcements
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn btn-danger" style="width:100%; justify-content:center;" onclick="logout()">🚪 Logout</button>
+    </div>
+  </aside>
+
+  <div class="main-content">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="mobile-toggle" onclick="openSidebar()">☰</button>
+        <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      </div>
+      <div class="topbar-right">
+        <div class="search-bar">
+          <span>🔍</span>
+          <input type="text" placeholder="Search..."/>
+        </div>
+        <div class="notification-btn">🔔<span class="badge" id="notifBadge">0</span></div>
+        <div class="avatar" id="topbarAvatar" style="cursor:pointer" onclick="switchSection('profile', null)">S</div>
+      </div>
+    </div>
+
+    <!-- HOME -->
+    <section class="section active" id="section-home">
+      <div class="section-header">
+        <h2 id="welcomeMsg">Welcome back, Student! 👋</h2>
+        <p>Here's what's happening on campus today.</p>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card accent1">
+          <div class="stat-icon">📚</div>
+          <div class="stat-value" id="homeNoteCount">0</div>
+          <div class="stat-label">Notes Shared</div>
+        </div>
+        <div class="stat-card accent2">
+          <div class="stat-icon">📝</div>
+          <div class="stat-value" id="homeLeaveCount">0</div>
+          <div class="stat-label">Leave Requests</div>
+        </div>
+        <div class="stat-card accent3">
+          <div class="stat-icon">💬</div>
+          <div class="stat-value" id="homeMsgCount">0</div>
+          <div class="stat-label">Messages Sent</div>
+        </div>
+        <div class="stat-card accent4">
+          <div class="stat-icon">📢</div>
+          <div class="stat-value" id="homeAnnouncementCount">0</div>
+          <div class="stat-label">Announcements</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="margin-bottom:16px;font-size:1.1rem;">📢 Latest Announcements</h3>
+          <div id="homeAnnouncements">
+            <div class="empty-state"><div class="empty-icon">📭</div><p>No announcements yet</p></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="margin-bottom:16px;font-size:1.1rem;">🕒 Recent Activity</h3>
+          <div id="recentActivity">
+            <div class="empty-state"><div class="empty-icon">🌙</div><p>No recent activity</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFILE -->
+    <section class="section" id="section-profile">
+      <div class="section-header">
+        <h2>👤 My Profile</h2>
+        <p>Manage your personal information</p>
+      </div>
+      <div class="card" style="max-width:600px;">
+        <div class="profile-pic-wrap">
+          <div class="avatar avatar-lg" id="profileAvatar">S</div>
+          <div>
+            <h3 id="profileDisplayName" style="font-size:1.2rem;">Student Name</h3>
+            <p style="color:var(--text-muted);font-size:0.9rem;" id="profileDisplayEmail">student@email.com</p>
+          </div>
+        </div>
+        <div id="profileAlert" class="alert alert-success"></div>
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" class="form-control" id="profileName" placeholder="Your full name"/>
+        </div>
+        <div class="form-group">
+          <label>University / College</label>
+          <input type="text" class="form-control" id="profileUniversity" placeholder="e.g. MIT, IIT Delhi"/>
+        </div>
+        <div class="form-group">
+          <label>Course / Major</label>
+          <input type="text" class="form-control" id="profileCourse" placeholder="e.g. Computer Science"/>
+        </div>
+        <div class="form-group">
+          <label>Year of Study</label>
+          <select class="form-control" id="profileYear">
+            <option value="">Select year</option>
+            <option value="1st Year">1st Year</option>
+            <option value="2nd Year">2nd Year</option>
+            <option value="3rd Year">3rd Year</option>
+            <option value="4th Year">4th Year</option>
+            <option value="Postgraduate">Postgraduate</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Bio</label>
+          <textarea class="form-control" id="profileBio" placeholder="Tell something about yourself..."></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="saveProfile()">💾 Save Profile</button>
+      </div>
+    </section>
+
+    <!-- ROOMMATE -->
+    <section class="section" id="section-roommate">
+      <div class="section-header">
+        <h2>🏘️ Roommate Matching</h2>
+        <p>Find your perfect roommate</p>
+      </div>
+      <div class="grid-2" style="margin-bottom:24px;">
+        <div class="card">
+          <h3 style="margin-bottom:16px;font-size:1.05rem;">📍 My Preferences</h3>
+          <div class="form-group">
+            <label>City / Location</label>
+            <input type="text" class="form-control" id="roommateCity" placeholder="e.g. Mumbai, Delhi"/>
+          </div>
+          <div class="form-group">
+            <label>Preferences (comma separated)</label>
+            <input type="text" class="form-control" id="roommatePrefs" placeholder="e.g. Non-smoker, Early riser, Pets OK"/>
+          </div>
+          <button class="btn btn-primary" onclick="saveRoommateProfile()">📋 List My Profile</button>
+        </div>
+        <div class="card">
+          <h3 style="margin-bottom:12px;font-size:1.05rem;">✅ Selected Roommate</h3>
+          <div id="selectedRoommate">
+            <div class="empty-state"><div class="empty-icon">🤝</div><p>No roommate selected yet</p></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:18px;font-size:1.05rem;">👥 Available Students</h3>
+        <div class="grid-auto" id="roommateList">
+          <div class="empty-state"><div class="empty-icon">🔍</div><p>No students listed yet. Be the first!</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NOTES -->
+    <section class="section" id="section-notes">
+      <div class="section-header">
+        <h2>📚 Notes</h2>
+        <p>Share and access study materials</p>
+      </div>
+      <div class="grid-2" style="margin-bottom:24px;">
+        <div class="card">
+          <h3 style="margin-bottom:16px;font-size:1.05rem;">➕ Add Note</h3>
+          <div id="notesAlert" class="alert alert-success"></div>
+          <div class="form-group">
+            <label>Note Title</label>
+            <input type="text" class="form-control" id="noteTitle" placeholder="e.g. Data Structures Notes"/>
+          </div>
+          <div class="form-group">
+            <label>Subject</label>
+            <input type="text" class="form-control" id="noteSubject" placeholder="e.g. Computer Science"/>
+          </div>
+          <div class="form-group">
+            <label>Upload File (PDF)</label>
+            <input type="file" class="form-control" id="noteFile" accept=".pdf,.doc,.docx,.txt"/>
+            <p class="form-hint">Supported: PDF, DOC, TXT</p>
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea class="form-control" id="noteDesc" placeholder="Brief description..." style="min-height:80px;"></textarea>
+          </div>
+          <button class="btn btn-primary" onclick="addNote()">📤 Upload Note</button>
+        </div>
+        <div class="card" style="background:linear-gradient(135deg,rgba(108,99,255,0.06),rgba(67,217,176,0.04));">
+          <h3 style="margin-bottom:8px;font-size:1.05rem;">💡 Tips</h3>
+          <p style="color:var(--text-muted);font-size:0.88rem;line-height:1.7;">• Upload organized PDFs for better sharing<br/>• Add clear titles so others can find your notes<br/>• Delete outdated notes to keep the library clean<br/>• Download notes from fellow students to study!</p>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:18px;font-size:1.05rem;">📖 All Notes</h3>
+        <div class="item-list" id="notesList">
+          <div class="empty-state"><div class="empty-icon">📭</div><p>No notes uploaded yet</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEAVE -->
+    <section class="section" id="section-leave">
+      <div class="section-header">
+        <h2>📝 Leave Request</h2>
+        <p>Submit and track your leave applications</p>
+      </div>
+      <div class="grid-2" style="margin-bottom:24px;">
+        <div class="card">
+          <h3 style="margin-bottom:16px;font-size:1.05rem;">📋 New Request</h3>
+          <div id="leaveAlert" class="alert alert-success"></div>
+          <div class="form-group">
+            <label>Leave Type</label>
+            <select class="form-control" id="leaveType">
+              <option value="">Select type</option>
+              <option value="Medical">Medical Leave</option>
+              <option value="Personal">Personal Leave</option>
+              <option value="Family">Family Emergency</option>
+              <option value="Academic">Academic Event</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>From Date</label>
+            <input type="date" class="form-control" id="leaveFrom"/>
+          </div>
+          <div class="form-group">
+            <label>To Date</label>
+            <input type="date" class="form-control" id="leaveTo"/>
+          </div>
+          <div class="form-group">
+            <label>Reason</label>
+            <textarea class="form-control" id="leaveReason" placeholder="Explain your reason for leave..."></textarea>
+          </div>
+          <button class="btn btn-primary" onclick="submitLeave()">📨 Submit Request</button>
+        </div>
+        <div class="card">
+          <h3 style="margin-bottom:16px;font-size:1.05rem;">📊 Leave Summary</h3>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <div class="stat-card accent1" style="flex:1;min-width:100px;padding:16px;">
+              <div class="stat-icon" style="font-size:1.2rem;">⏳</div>
+              <div class="stat-value" style="font-size:1.4rem;" id="leavePendingCount">0</div>
+              <div class="stat-label" style="font-size:0.75rem;">Pending</div>
+            </div>
+            <div class="stat-card accent3" style="flex:1;min-width:100px;padding:16px;">
+              <div class="stat-icon" style="font-size:1.2rem;">✅</div>
+              <div class="stat-value" style="font-size:1.4rem;" id="leaveApprovedCount">0</div>
+              <div class="stat-label" style="font-size:0.75rem;">Approved</div>
+            </div>
+            <div class="stat-card accent2" style="flex:1;min-width:100px;padding:16px;">
+              <div class="stat-icon" style="font-size:1.2rem;">❌</div>
+              <div class="stat-value" style="font-size:1.4rem;" id="leaveRejectedCount">0</div>
+              <div class="stat-label" style="font-size:0.75rem;">Rejected</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:18px;font-size:1.05rem;">🗂️ My Leave History</h3>
+        <div class="item-list" id="leaveList">
+          <div class="empty-state"><div class="empty-icon">📭</div><p>No leave requests submitted yet</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CHAT -->
+    <section class="section" id="section-chat">
+      <div class="section-header">
+        <h2>💬 Campus Chat</h2>
+        <p>Connect with students in real-time</p>
+      </div>
+      <div class="chat-container">
+        <div class="chat-header">
+          <span style="font-size:1.1rem;">🌟</span>
+          <div>
+            <h3>CampusSphere Global Chat</h3>
+            <p style="font-size:0.78rem;opacity:0.8;">All students connected</p>
+          </div>
+          <div class="online-dot" style="margin-left:auto;"></div>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+          <div class="empty-state" id="chatEmpty">
+            <div class="empty-icon">💭</div>
+            <p>No messages yet. Start the conversation!</p>
+          </div>
+        </div>
+        <div class="chat-input">
+          <div class="msg-avatar" id="chatInputAvatar" style="font-size:0.8rem;">S</div>
+          <input type="text" id="chatInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendMessage()"/>
+          <button class="send-btn" onclick="sendMessage()">➤</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ANNOUNCEMENTS -->
+    <section class="section" id="section-announcements">
+      <div class="section-header">
+        <h2>📢 Announcements</h2>
+        <p>Stay updated with campus notices</p>
+      </div>
+      <div id="announcementList">
+        <div class="empty-state"><div class="empty-icon">📭</div><p>No announcements yet</p></div>
+      </div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
