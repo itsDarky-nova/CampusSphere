@@ -75,6 +75,48 @@ app.get('/api/students', async (req, res, next) => {
     next(err);
   }
 });
+app.post('/api/chat', async (req, res) => {
+  try {
+    const db = getDb();
+    const { text, senderId, senderName } = req.body;
+
+    if (!text || !senderId || !senderName) {
+      return res.status(400).json({ error: "Missing fields" });
+    }
+
+    const message = {
+      text,
+      senderId,
+      senderName,
+      timestamp: new Date().toISOString()
+    };
+
+    const ref = await db.collection('chat').add(message);
+
+    res.status(201).json({ id: ref.id, ...message });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+app.get('/api/chat', async (req, res) => {
+  try {
+    const db = getDb();
+    const snapshot = await db.collection('chat')
+      .orderBy('timestamp')
+      .get();
+
+    const messages = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    res.json(messages);
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // 404 handler
 app.use((req, res) => {
