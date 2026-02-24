@@ -7,7 +7,6 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 
 console.log("TYPE OF connectFirebase:", typeof connectFirebase);
-const { getDb } = require('./firebase');
 
 
 const app = express();
