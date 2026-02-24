@@ -1,4 +1,3 @@
-const { getDb } = require('./firebase');
 require('dotenv').config();
 
 const express = require('express');
@@ -6,18 +5,17 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 
-console.log("TYPE OF connectFirebase:", typeof connectFirebase);
-
+const { getDb } = require('./firebase'); // ✅ correct import
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
+// ================= MIDDLEWARE =================
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-// Health routes
+// ================= HEALTH =================
 app.get('/', (req, res) => {
   res.json({ status: 'ok', message: 'Student Hub API running' });
 });
@@ -26,12 +24,12 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// 🔥 CREATE STUDENT
-app.post('/api/students', async (req, res, next) => {
-  try {
-    console.log("POST /api/students HIT");
+// ================= STUDENTS =================
 
-    const db = connectFirebase();
+// Create student
+app.post('/api/students', async (req, res) => {
+  try {
+    const db = getDb(); // ✅ FIXED
 
     const { name, email, password } = req.body;
 
@@ -54,14 +52,14 @@ app.post('/api/students', async (req, res, next) => {
     });
 
   } catch (err) {
-    next(err);
+    res.status(500).json({ error: err.message });
   }
 });
 
-// 🔥 GET ALL STUDENTS
-app.get('/api/students', async (req, res, next) => {
+// Get all students
+app.get('/api/students', async (req, res) => {
   try {
-    const db = connectFirebase();   // ✅ FIXED
+    const db = getDb(); // ✅ FIXED
 
     const snapshot = await db.collection('students').get();
 
@@ -73,15 +71,17 @@ app.get('/api/students', async (req, res, next) => {
     res.json(students);
 
   } catch (err) {
-    next(err);
+    res.status(500).json({ error: err.message });
   }
 });
+
 // ================= CHAT =================
 
 // Get all chat messages
 app.get('/api/chat', async (req, res) => {
   try {
     const db = getDb();
+
     const snapshot = await db.collection('chat')
       .orderBy('timestamp', 'asc')
       .get();
@@ -92,16 +92,17 @@ app.get('/api/chat', async (req, res) => {
     }));
 
     res.json(messages);
+
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
 
-// Send message
+// Send chat message
 app.post('/api/chat', async (req, res) => {
   try {
     const db = getDb();
+
     const { text, senderId, senderName } = req.body;
 
     if (!text || !senderId || !senderName) {
@@ -123,21 +124,61 @@ app.post('/api/chat', async (req, res) => {
     });
 
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
-// 404 handler
+
+// ================= NOTES (Cloud Metadata) =================
+
+app.post('/api/notes', async (req, res) => {
+  try {
+    const db = getDb();
+
+    const { title, fileURL, uploaderId, uploaderName } = req.body;
+
+    const note = {
+      title,
+      fileURL,
+      uploaderId,
+      uploaderName,
+      createdAt: new Date().toISOString()
+    };
+
+    const ref = await db.collection('notes').add(note);
+
+    res.status(201).json({ id: ref.id, ...note });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/notes', async (req, res) => {
+  try {
+    const db = getDb();
+
+    const snapshot = await db.collection('notes')
+      .orderBy('createdAt', 'desc')
+      .get();
+
+    const notes = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    res.json(notes);
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ================= 404 =================
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-// Global error handler
-app.use((err, req, res, next) => {
-  console.error("❌", err.message);
-  res.status(500).json({ error: err.message });
-});
-
+// ================= SERVER =================
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
